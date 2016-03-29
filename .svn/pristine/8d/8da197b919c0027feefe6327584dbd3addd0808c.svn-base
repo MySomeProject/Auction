@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<array>
+	<string>请选择</string>
+	<string>中国工商银行</string>
+	<string>中国农业银行</string>
+	<string>中国银行</string>
+	<string>中国建设银行</string>
+	<string>交通银行</string>
+	<string>中国邮政储蓄银行</string>
+	<string>中信银行</string>
+	<string>中国民生银行</string>
+	<string>兴业银行</string>
+	<string>中国光大银行</string>
+	<string>招商银行</string>
+	<string>浦发银行</string>
+	<string>广发银行</string>
+	<string>华夏银行</string>
+	<string>上海银行</string>
+	<string>上海农商银行</string>
+	<string>平安银行</string>
+	<string>北京银行</string>
+	<string>北京农商银行</string>
+	<string>青岛银行</string>
+	<string>其他银行</string>
+</array>
+</plist>

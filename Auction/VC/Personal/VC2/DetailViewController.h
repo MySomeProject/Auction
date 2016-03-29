@@ -1,0 +1,48 @@
+//
+//  DetailViewController.h
+//  YOU WATCH－Auction
+//
+//  Created by 葛宾霞151 on 15/7/27.
+//  Copyright (c) 2015年 葛宾霞151. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface DetailViewController : UIViewController
+
+//***************************************************************//
+@property(nonatomic , copy)UILabel *timeLab;  //拍下时间
+
+@property(nonatomic , copy)UIImageView *themeImageDv; //商品图片
+
+@property(nonatomic , copy)UILabel *titleLab;//商品标题
+
+@property(nonatomic , copy)UILabel *finishMoney; //成交金额
+
+@property(nonatomic , copy)UILabel *stateLabel;//订单状态
+
+@property(nonatomic , copy)UILabel *payLab;//支付方式
+
+@property(nonatomic , copy)UILabel *orderNum;//快递单号
+
+@property(nonatomic , copy)UILabel *addressLab;//地址
+
+@property(nonatomic , copy)UILabel *nameLab;//收货人
+
+@property(nonatomic , copy)UILabel *tellLab;//收货人联系电话
+
+@property(nonatomic , copy)UIButton *stateButton;  //状态button
+
+
+
+
+@property(nonatomic , assign)int index;  //纪录跳转过来的cell的下标
+
+@property(nonatomic , strong)NSMutableDictionary *detailDic;   //存放cell的相关数据
+
+@property(nonatomic ,strong)NSString *detailSign;  //订单状态
+
+@property(nonatomic , copy)NSString *detailID;//商品ID
+
+
+@end

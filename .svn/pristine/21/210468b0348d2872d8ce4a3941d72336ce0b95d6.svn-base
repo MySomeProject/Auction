@@ -1,0 +1,234 @@
+//
+//  PayViewController.m
+//  YOU WATCH－Auction
+//
+//  Created by 葛宾霞151 on 15/7/30.
+//  Copyright (c) 2015年 葛宾霞151. All rights reserved.
+//
+
+#import "PayViewController.h"
+#import "ZYControl.h"
+#import "AOColorFormat.h"
+#import "SuccessViewController.h"
+#import "UserProtolViewController.h"
+#import "BankViewController.h"
+#import "AFNetworking.h"
+
+@interface PayViewController ()<UITableViewDataSource,UITableViewDelegate>
+{
+    //存放cell名称的数组
+    NSArray *nameArr;
+    //存放@0的数组
+    NSMutableArray *selectArr;
+    //存放图标的数组
+    NSArray *imageArr;
+    //确认按钮
+    UIButton *btn;
+    
+    int index;
+    int flag;
+    BOOL isSelect;//cell 是否被选中
+    
+    //提示选择付款方式
+    UIButton *bgView1;
+    UIButton *alterbtn1;
+    UILabel *alterLabel;
+}
+
+@end
+
+@implementation PayViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.title = @"订单支付";
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    nameArr = @[@"支付宝",@"微信支付",@"银联支付",@"银行转账／汇款"];
+    imageArr = @[@"支付宝",@"微信",@"银联",@"银行汇款"];
+    selectArr = [NSMutableArray arrayWithArray:@[@0, @0, @0, @0]];
+
+    isSelect = NO;
+    
+    [self.payButton addTarget:self action:@selector(PayAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.userProtocol addTarget:self action:@selector(userProAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self createTabItemLeftButton];
+}
+
+-(void)createTabItemLeftButton
+{
+    UIButton *leftButton = [ZYControl createButtonWithFrame:CGRectMake(0, 24,9,17) ImageName:@"返回@2x.png" Target:self Action:@selector(leftButtonClick:) Title:nil];
+    self.navigationItem.leftBarButtonItem=[[UIBarButtonItem alloc]initWithCustomView:leftButton];
+    
+}
+
+-(void)leftButtonClick:(UIButton *)leftButton
+{
+    [self.navigationController popViewControllerAnimated:YES];
+    
+    self.tabBarController.tabBar.hidden = YES;
+    
+}
+//银行转账／汇款数据
+-(void)createDataBank
+{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    NSDictionary *paramer = @{@"client_id":@"1034",@"orderid":_orderID};
+    NSString *url = @"http://123.57.212.63/paimai/index.php?con=api&act=remittance";
+    
+    [manager POST:url parameters:paramer success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSLog(@"银行转账／汇款数据返回成功 －－－ %@",responseObject);
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"银行转账／汇款数据返回失败 －－－ %@",operation.error);
+    }];
+    
+}
+
+-(void)PayAction:(UIButton *)button
+{
+    if (isSelect) {
+    
+    if (index == 3) {
+        
+        [self createDataBank];
+        BankViewController *bankVC = [[BankViewController alloc]init];
+        bankVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:bankVC animated:YES];
+
+    }else
+    {
+        switch (index) {
+                
+            case 0:
+                //支付宝支付数据
+                
+            break;
+                
+            case 1:
+                //微信支付数据
+                
+            break;
+                
+            default:
+                //银联支付数据
+                
+                break;
+        }
+        
+    SuccessViewController *succVC = [[SuccessViewController alloc]init];
+    
+    [self.navigationController pushViewController:succVC animated:YES];
+    
+    succVC.hidesBottomBarWhenPushed = YES;
+
+    }
+  }else
+  {
+      bgView1 = [UIButton buttonWithType:UIButtonTypeCustom];
+      bgView1.frame = CGRectMake(0, 0, kScreenWidth, kScreenHeight);
+      bgView1.backgroundColor = [UIColor blackColor];
+      bgView1.alpha = 0.5;
+      [bgView1 addTarget:self action:@selector(alterAction4:) forControlEvents:UIControlEventTouchUpInside];
+      [self.view addSubview:bgView1];
+      
+      
+      alterbtn1 = [UIButton buttonWithType:UIButtonTypeCustom];
+      alterbtn1.frame = CGRectMake((kScreenWidth - 500 *RATIOTYPE_WIDTH)/2,400 *RATIOTYPE_HEIGHT, 500 * RATIOTYPE_WIDTH, 200 * RATIOTYPE_HEIGHT) ;
+      alterbtn1.backgroundColor = [UIColor whiteColor];
+      alterbtn1.alpha = 1;
+      [alterbtn1 addTarget:self action:@selector(alterAction4:) forControlEvents:UIControlEventTouchUpInside];
+      [self.view addSubview:alterbtn1];
+      
+      
+      alterLabel = [[UILabel alloc]initWithFrame:CGRectMake(28, (120 * RATIOTYPE_HEIGHT)/2, 500 *RATIOTYPE_WIDTH-30 - 20, 20)];
+      alterLabel.text = @"请选择付款方式！";
+      alterLabel.textAlignment = NSTextAlignmentCenter;
+      alterLabel.textColor = [AOColorFormat colorWithHexString:@"#4c4c4c"];
+      alterLabel.font = [UIFont systemFontOfSize:14];
+      [alterbtn1 addSubview:alterLabel];
+
+  }
+}
+
+-(void)alterAction4:(UIButton *)button
+{
+        [bgView1 removeFromSuperview];
+        [alterbtn1 removeFromSuperview];
+}
+
+-(void)userProAction:(UIButton *)button
+{
+    UserProtolViewController *userVC = [[UserProtolViewController alloc]init];
+    
+    [self.navigationController pushViewController:userVC animated:YES];
+    
+    userVC.hidesBottomBarWhenPushed = YES;
+    
+}
+
+#pragma mark --- UITableViewDelegate
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *str = @"PayViewController";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:str];
+    
+    if (!cell) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:str];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    
+    cell.textLabel.text = nameArr[indexPath.row];
+    cell.textLabel.font = [UIFont systemFontOfSize:15];
+    cell.textLabel.textColor = [AOColorFormat colorWithHexString:@"#4c4c4c"];
+    cell.imageView.image = [UIImage imageNamed:imageArr[indexPath.row]];
+    
+    for (UIView *vi in cell.contentView.subviews) {
+        [vi removeFromSuperview];
+    }
+    btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    btn.frame = CGRectMake(kScreenWidth - 38, 13, 17, 17);
+    [btn setImage:[UIImage imageNamed:@"未选中状态"] forState:UIControlStateNormal];
+    [btn setImage:[UIImage imageNamed:@"选择状态按钮"] forState:UIControlStateSelected];
+    [btn addTarget:self action:@selector(Act:) forControlEvents:UIControlEventTouchUpInside];
+    btn.selected = [selectArr[indexPath.row] boolValue];
+    [cell.contentView addSubview:btn];
+    
+    return cell;
+}
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return nameArr.count;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 44;
+}
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    for (int i = 0; i < selectArr.count; i ++) {
+        [selectArr replaceObjectAtIndex:i withObject:@0];
+    }
+    [selectArr replaceObjectAtIndex:indexPath.row withObject:@1];
+    [_payTableView reloadData];
+    index = (int)indexPath.row;
+    NSLog(@"%d",index);
+    
+    isSelect = YES;
+
+}
+
+-(void)Act:(UIButton *)button
+{
+    
+    UITableViewCell *cell = (UITableViewCell *)[[button superview] superview];
+    NSIndexPath *ind = [_payTableView indexPathForCell:cell];
+    [self tableView:_payTableView didSelectRowAtIndexPath:ind];
+}
+
+
+@end

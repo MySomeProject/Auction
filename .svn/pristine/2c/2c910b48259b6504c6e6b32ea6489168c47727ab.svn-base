@@ -1,0 +1,519 @@
+//
+//  PatProductListViewController.m
+//  YOU WATCH－Auction
+//
+//  Created by zhaoyue on 15/6/30.
+//  Copyright (c) 2015年 葛宾霞151. All rights reserved.
+//
+
+#import "PatProductListViewController.h"
+#import "ZYControl.h"
+#import "AOColorFormat.h"
+#import "PatProduceModel.h"
+#import "PatProduceCell.h"
+#import "PatProduceDetailViewController.h"
+#import "AFNetworking.h"
+#import "LogInViewController.h"
+#import "YYHongShare.h"
+
+
+
+@interface PatProductListViewController ()<UITableViewDelegate,UITableViewDataSource>
+{
+    UITableView *_newTableView;
+    NSMutableArray *_dataArray;
+    NSMutableArray *_headerArray;
+    UILabel *sendLabel;
+    UILabel *numberLable ;
+    //传参
+    NSString *spec_nameString;
+    
+    UILabel *hourLabel;
+    UILabel *minuteLabel;
+    UILabel *secondLabel;
+    int count;
+    int number;
+    int minCount;
+    int hourCount;
+    NSTimer *timer;
+    int min;
+    int hour;
+    UIView *bgView;
+    UIView *view;
+    
+    NSString * title;
+    
+}
+@end
+@implementation PatProductListViewController
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _dataArray = [[NSMutableArray alloc]init];
+        _headerArray = [[NSMutableArray alloc]init];
+        
+    }
+    return self;
+}
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.view.backgroundColor =[UIColor whiteColor];
+    self.title = @"拍品列表";
+    [self createTableView];
+    [self createTabItemLeftButton];
+    [self createHeaderData];
+    [self createHeaderView];
+    [self createPatProductData];
+    
+}
+-(void)createTabItemLeftButton
+{
+    UIButton *leftButton = [ZYControl createButtonWithFrame:CGRectMake(15,24,9,17) ImageName:@"返回@2x.png" Target:self Action:@selector(leftButtonClick:) Title:nil];
+    self.navigationItem.leftBarButtonItem=[[UIBarButtonItem alloc]initWithCustomView:leftButton];
+
+    //分享按钮
+    UIButton *shareButton = [ZYControl createButtonWithFrame:CGRectMake(300*RATIOTYPE_WIDTH, 24,46*RATIOTYPE_WIDTH,37*RATIOTYPE_HEIGHT) ImageName:@"分享@2x.png" Target:self Action:@selector(shareButtonClick:) Title:nil];
+
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]initWithCustomView:shareButton];
+    
+}
+-(void)leftButtonClick:(UIButton *)leftButton
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+-(void)shareButtonClick:(UIButton *)shareButton
+{
+    
+    
+    
+    bgView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+    bgView.backgroundColor = [UIColor colorWithWhite:0 alpha:0.5];
+    [self.view addSubview:bgView];
+    UIControl *bgControl = [[UIControl alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, kScreenHeight)];
+    [bgControl addTarget:self action:@selector(bgControlClick) forControlEvents:UIControlEventTouchUpInside];
+    [bgView addSubview:bgControl];
+
+    
+    
+    
+    view = [[UIView alloc]initWithFrame:CGRectMake(0,kScreenWidth,0,310*RATIOTYPE_HEIGHT)];
+    view.backgroundColor = [UIColor whiteColor];
+    [bgView addSubview:view];
+    [UIView animateWithDuration:0.3 animations:^{
+        
+        view.frame = CGRectMake(60*RATIOTYPE_WIDTH, (kScreenHeight-310*RATIOTYPE_HEIGHT)/2, kScreenWidth -120*RATIOTYPE_WIDTH, 310*RATIOTYPE_HEIGHT);
+        
+        
+    } completion:^(BOOL finished) {
+        
+        //朋友圈分享
+        UILabel *titleLabel = [ZYControl createLabelWithFrame:CGRectMake(250*RATIOTYPE_WIDTH,30*RATIOTYPE_HEIGHT,100*RATIOTYPE_WIDTH,60*RATIOTYPE_HEIGHT) Font:20 Text:@"分享"];
+        titleLabel.textColor = [AOColorFormat colorWithHexString:@"4c4c4c"];
+        [view addSubview:titleLabel];
+        
+        UIButton *friendBtn = [ZYControl createButtonWithFrame:CGRectMake(100*RATIOTYPE_WIDTH, 130*RATIOTYPE_HEIGHT,119*RATIOTYPE_WIDTH,117*RATIOTYPE_HEIGHT) ImageName:@"朋友圈@2x.png" Target:self Action:@selector(friendBtnClick:) Title:nil];
+        [view addSubview:friendBtn];
+        
+        UILabel *downLabel = [ZYControl createLabelWithFrame:CGRectMake(110*RATIOTYPE_WIDTH,CGRectGetMaxY(friendBtn.frame),150*RATIOTYPE_WIDTH,60*RATIOTYPE_HEIGHT) Font:17 Text:@"朋友圈"];
+        downLabel.textColor = [AOColorFormat colorWithHexString:@"4c4c4c"];
+        [view addSubview:downLabel];
+        //微信分享
+        UIButton *weiBtn=  [ZYControl createButtonWithFrame:CGRectMake(580*RATIOTYPE_WIDTH-170*RATIOTYPE_WIDTH, 130*RATIOTYPE_HEIGHT, 119*RATIOTYPE_WIDTH, 117*RATIOTYPE_HEIGHT) ImageName:@"微信1@2x.png" Target:self Action:@selector(weiBtnClick:) Title:nil];
+        [view addSubview:weiBtn];
+        
+        UILabel *weiLabel = [ZYControl createLabelWithFrame:CGRectMake(435*RATIOTYPE_WIDTH,CGRectGetMaxY(weiBtn.frame),150*RATIOTYPE_WIDTH, 60*RATIOTYPE_HEIGHT) Font:17 Text:@"微信"];
+        weiLabel.textColor = [AOColorFormat colorWithHexString:@"4c4c4c"];
+        [view addSubview:weiLabel];
+        
+    }];
+
+}
+
+-(void)bgControlClick
+{
+    [bgView removeFromSuperview];
+    
+}
+//朋友圈
+-(void)friendBtnClick:(UIButton *)friendBtn
+{
+    NSString * strurl = [NSString stringWithFormat:@"http://share.luxji.com/index.php?con=share&act=getAuction&specialid=%@",_id];
+    for (PatProduceModel *model in _dataArray) {
+        
+        title = model.auct_title;
+    }
+    
+    
+    NSString * image = [NSString stringWithFormat:@"2.png"];
+    NSString * description = [NSString stringWithFormat:@"拍品列表"];
+    
+    
+    NSDictionary * dic = @{@"title":title,
+                           @"webUrl":strurl,
+                           @"description":description,
+                           @"image":image};
+    
+    
+    [YYHongShare YYHongWeiXinShare:dic type:1];
+    
+
+
+}
+
+-(void)weiBtnClick:(UIButton *)weiBtn
+{
+
+    NSString * strurl = [NSString stringWithFormat:@"http://share.luxji.com/index.php?con=share&act=getAuction&specialid=%@",_id];
+    for (PatProduceModel *model in _dataArray) {
+        
+        title = model.auct_title;
+    }
+    
+    
+    NSString * image = [NSString stringWithFormat:@"2.png"];
+    NSString * description = [NSString stringWithFormat:@"拍品列表"];
+    
+    
+    NSDictionary * dic = @{@"title":title,
+                           @"webUrl":strurl,
+                           @"description":description,
+                           @"image":image};
+    
+    
+    [YYHongShare YYHongWeiXinShare:dic type:0];
+    
+
+
+}
+
+-(void)createHeaderView
+{
+    //    [self createHeaderData];
+    
+    UIView *headerView = [[UIView alloc]initWithFrame:CGRectMake(0,64, kScreenWidth,250*RATIOTYPE_HEIGHT)];
+    //    headerView.backgroundColor = [UIColor redColor];
+    if ([self.typeString isEqualToString:@"1"]) {
+        UILabel *endLabel = [ZYControl createLabelWithFrame:CGRectMake(kScreenWidth/2-80*RATIOTYPE_WIDTH,60*RATIOTYPE_HEIGHT,250*RATIOTYPE_WIDTH,30*RATIOTYPE_HEIGHT) Font:25 Text:@"已 结 束"];
+        endLabel.textColor = [AOColorFormat colorWithHexString:@"4c4c4c"];
+        [headerView addSubview:endLabel];
+
+    }else{
+        //距离结束还有
+        UILabel * titleLable = [ZYControl createLabelWithFrame:CGRectMake(kScreenWidth/2-100*RATIOTYPE_WIDTH,34*RATIOTYPE_HEIGHT,250*RATIOTYPE_WIDTH,30*RATIOTYPE_HEIGHT) Font:16 Text:@"距离结束还有"];
+        titleLable.textColor = [AOColorFormat colorWithHexString:@"4c4c4c"];
+        [headerView addSubview:titleLable];
+        //显示时间
+        for (int i = 0; i<3; i++) {
+            UILabel *timeLable = [ZYControl createLabelWithFrame:CGRectMake(kScreenWidth/2-120*RATIOTYPE_WIDTH+80*RATIOTYPE_WIDTH*i,70*RATIOTYPE_HEIGHT,60*RATIOTYPE_WIDTH,60*RATIOTYPE_HEIGHT) Font:19 Text:nil];
+            timeLable.textColor = [AOColorFormat colorWithHexString:@"4c4c4c"];
+            timeLable.tag = 500+i;
+            [headerView addSubview:timeLable];
+        }
+    
+    for (int i = 0; i<2; i++) {
+        UILabel *label = [ZYControl createLabelWithFrame:CGRectMake(kScreenWidth/2-60*RATIOTYPE_WIDTH+80*RATIOTYPE_WIDTH*i,70*RATIOTYPE_HEIGHT,60*RATIOTYPE_WIDTH,60*RATIOTYPE_HEIGHT) Font:19 Text:@":"];
+        [headerView addSubview:label];
+    }
+    }
+    //创建送拍机构名称lable
+    sendLabel = [ZYControl createLabelWithFrame:CGRectMake(30*RATIOTYPE_WIDTH, 140*RATIOTYPE_HEIGHT,240*RATIOTYPE_WIDTH, 60*RATIOTYPE_HEIGHT) Font:16 Text:nil];
+    NSLog(@"%@",[_headerArray firstObject]);
+    sendLabel.textColor = [AOColorFormat colorWithHexString:@"666666"];
+    [headerView addSubview:sendLabel];
+    //创建共20件拍品lable
+    numberLable =[ZYControl createLabelWithFrame:CGRectMake(30*RATIOTYPE_WIDTH,CGRectGetMaxY(sendLabel.frame),200*RATIOTYPE_WIDTH,40*RATIOTYPE_HEIGHT) Font:14 Text:nil];
+    numberLable.textColor = [AOColorFormat colorWithHexString:@"666666"];
+    [headerView addSubview:numberLable];
+    
+    //创建结束提醒button
+    UIButton *remindButton =[ZYControl createButtonWithFrame:CGRectMake(kScreenWidth-105*RATIOTYPE_WIDTH,CGRectGetMinY(sendLabel.frame)-10*RATIOTYPE_HEIGHT,51*RATIOTYPE_WIDTH,50*RATIOTYPE_HEIGHT) ImageName:@"结束提醒灰@2x.png" Target:self Action:@selector(remindButtonClick:) Title:nil];
+    [headerView addSubview:remindButton];
+    
+    UILabel *remindLable = [ZYControl createLabelWithFrame:CGRectMake(kScreenWidth-160*RATIOTYPE_WIDTH,CGRectGetMaxY(sendLabel.frame),140*RATIOTYPE_WIDTH,40*RATIOTYPE_HEIGHT) Font:14 Text:@"结束提醒"];
+    remindLable.textColor = [AOColorFormat colorWithHexString:@"666666"];
+    [headerView addSubview:remindLable];
+    //创建分界线
+    UIView *boundaryView = [[UIView alloc]initWithFrame:CGRectMake(30*RATIOTYPE_WIDTH, 250*RATIOTYPE_HEIGHT, kScreenWidth-60*RATIOTYPE_WIDTH,2*RATIOTYPE_HEIGHT)];
+    boundaryView.backgroundColor = [UIColor blackColor];
+    [headerView addSubview:boundaryView];
+    [self.view addSubview:headerView];
+    
+}
+//头部视图数据
+-(void)createHeaderData
+{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    NSString *url =@"http://123.57.212.63/paimai/index.php?con=api&act=getSpeicial";
+    [manager POST:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSDictionary *dict = responseObject[@"data"];
+        NSArray *specialArray = [dict objectForKey:@"special"];
+        for (NSDictionary *specialDict in specialArray) {
+            PatProduceModel *headerModel = [[PatProduceModel alloc]init];
+            headerModel.spec_name = [NSString stringWithFormat:@"%@",[specialDict objectForKey:@"spec_name"]];
+            headerModel.auct_count = [NSString stringWithFormat:@"%@",[specialDict objectForKey:@"auct_count"]];
+            [_headerArray addObject:headerModel];
+            sendLabel.text = headerModel.spec_name;
+            numberLable.text = [NSString stringWithFormat:@"共%@件拍品",headerModel.auct_count];
+        }
+        [self createHeaderView];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"%@",error);
+    }];
+    
+    
+}
+
+-(void)remindButtonClick:(UIButton *)remindButton
+{
+    if (remindButton.selected == NO) {
+        [self createReminderData:1];
+        [remindButton setImage:[UIImage imageNamed:@"结束提醒@2x.png"] forState:UIControlStateNormal];
+        
+        remindButton.selected = YES;
+        [self createReminderData:0];
+        
+    }else{
+        [self createReminderData:1];
+        remindButton.selected = NO;
+        [remindButton setImage:[UIImage imageNamed:@"结束提醒灰@2x.png"] forState:UIControlStateSelected];
+        
+    }
+}
+-(void)createReminderData:(NSInteger )ID
+{
+    NSUserDefaults *user = [NSUserDefaults standardUserDefaults];
+    if ([user objectForKey:@"client_id"] == nil) {
+        LogInViewController *lvc = [[LogInViewController alloc]init];
+        [self.navigationController pushViewController:lvc animated:YES];
+        
+    }else{
+        
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        manager.responseSerializer = [AFJSONResponseSerializer serializer];
+        for (PatProduceModel *model in _headerArray) {
+            spec_nameString = [NSString stringWithFormat:@"%@",model.spec_name];
+        }
+        for (PatProduceModel *model in _dataArray) {
+            
+    
+            
+            NSString *url = @"http://123.57.212.63/paimai/index.php?con=api&act=setReminders";
+            NSDictionary *parameters = @{@"specialid":_id,@"reminders":@"ID",@"client_id":[user objectForKey:@"client_id"],@"starttime":model.start_time,@"endtime":model.end_time,@"name":spec_nameString};
+            
+            [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+                NSLog(@"%@",responseObject);
+                
+            } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                NSLog(@"%@",error);
+            }];
+        }
+    }
+    
+}
+
+-(void)createTableView
+{
+    _newTableView = [[UITableView alloc]initWithFrame:CGRectMake(15*RATIOTYPE_HEIGHT,240*RATIOTYPE_HEIGHT, kScreenWidth-30*RATIOTYPE_WIDTH, kScreenHeight-250*RATIOTYPE_HEIGHT-49-64) style:UITableViewStylePlain];
+    _newTableView.delegate = self;
+    _newTableView.dataSource = self;
+    [self.view addSubview:_newTableView];
+}
+//请求数据
+-(void)createPatProductData
+{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    NSString *url = @"http://123.57.212.63/paimai/index.php?con=api&act=getAuction";
+    NSDictionary *parameters = @{@"specialid":_id};
+    //    NSLog(@"%@",_id);
+    [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSDictionary *dataDict = responseObject[@"data"];
+        NSLog(@"%@",dataDict);
+        NSArray *auctionArray = [dataDict objectForKey:@"auction"];
+        //        NSLog(@"%@",auctionArray);
+        for (NSDictionary *auctionDict in auctionArray) {
+            PatProduceModel *model = [[PatProduceModel alloc]init];
+            model.uid = [auctionDict objectForKey:@"id"];
+            model.img = [NSString stringWithFormat:@"%@",[auctionDict objectForKey:@"img"]];
+            model.auct_title = [NSString stringWithFormat:@"%@",[auctionDict objectForKey:@"auct_title"]];
+            model.auct_price = [NSString stringWithFormat:@"%@",[auctionDict objectForKey:@"auct_price"]];
+            model.auct_number = [NSString stringWithFormat:@"%@",[auctionDict objectForKey:@"auct_number"]];
+            model.start_time = [NSString stringWithFormat:@"%@",[auctionDict objectForKey:@"start_time"]];
+            model.end_time = [NSString stringWithFormat:@"%@",[auctionDict objectForKey:@"end_time"]];
+            
+            hourLabel = (UILabel *)[self.view viewWithTag:500];
+            minuteLabel = (UILabel *)[self.view viewWithTag:501];
+            secondLabel = (UILabel *)[self.view viewWithTag:502];
+            
+            //创建一个时间戳
+            NSDateFormatter *df = [[NSDateFormatter alloc] init];
+            df.dateFormat = @"HH:mm:ss";
+            NSDate *date = [NSDate date];
+            NSString *dateString = [df stringFromDate:date];
+            
+            if ([model.start_time doubleValue] > [dateString doubleValue]) {
+                double _interval = [model.start_time doubleValue] - [dateString doubleValue];
+                NSString * timeStampString = [NSString stringWithFormat:@"%f",_interval];
+                NSTimeInterval _interval2=[timeStampString doubleValue];
+                NSDate *date = [NSDate dateWithTimeIntervalSince1970:_interval2];
+                NSDateFormatter *objDateformat = [[NSDateFormatter alloc] init];
+                [objDateformat setDateFormat:@"HH:mm:ss"];
+                NSString *dateStr = [objDateformat stringFromDate: date];
+                NSCharacterSet * set = [NSCharacterSet characterSetWithCharactersInString:@" :"] ;
+                NSArray * array1 = [dateStr componentsSeparatedByCharactersInSet:set];
+                hourLabel.text = array1[0];
+                minuteLabel.text = array1[1];
+                secondLabel.text = array1[2];
+                
+                //        static  int count;
+                for (int i = 0; i<array1.count; i++) {
+                    if (i == 0) {
+                        number  = [array1[0] intValue]*60*60;
+                    }else if (i == 1)
+                    {
+                        number += [array1[1]intValue]*60;
+                    }
+                    else if (i == 2)
+                    {
+                        number += [array1[2]intValue];
+                    }
+                }
+                
+            }else if ([model.end_time doubleValue] > [dateString doubleValue]){
+                double _interval = [model.end_time doubleValue] - [dateString doubleValue];
+                NSString * timeStampString = [NSString stringWithFormat:@"%f",_interval];
+                NSTimeInterval _interval1=[timeStampString doubleValue];
+                NSDate *date = [NSDate dateWithTimeIntervalSince1970:_interval1];
+                NSDateFormatter *objDateformat = [[NSDateFormatter alloc] init];
+                [objDateformat setDateFormat:@"HH:mm:ss"];
+                NSString *dateStr = [objDateformat stringFromDate: date];
+                NSCharacterSet * set = [NSCharacterSet characterSetWithCharactersInString:@" :"] ;
+                NSArray * array1 = [dateStr componentsSeparatedByCharactersInSet:set];
+                hourLabel.text = array1[0];
+                minuteLabel.text = array1[1];
+                secondLabel.text = array1[2];
+                
+                //        static  int count;
+                for (int i = 0; i<array1.count; i++) {
+                    if (i == 0) {
+                        number  = [array1[0] intValue]*60*60;
+                    }else if (i == 1)
+                    {
+                        number += [array1[1]intValue]*60;
+                    }
+                    else if (i == 2)
+                    {
+                        number += [array1[2]intValue];
+                    }
+                }
+                //
+            }
+            
+            
+            [_dataArray addObject:model];
+        }
+        
+        timer = [NSTimer timerWithTimeInterval:1 target:self selector:@selector(timeFireMethod11) userInfo:nil repeats:YES];
+        [[NSRunLoop mainRunLoop] addTimer:timer forMode:NSRunLoopCommonModes];
+        count = [secondLabel.text intValue];
+        min = [minuteLabel.text intValue];
+        hour = [hourLabel.text intValue];
+        
+        
+        
+        [_newTableView reloadData];
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"%@",error);
+    }];
+    
+}
+
+
+-(void)timeFireMethod11{
+    secondLabel.text = [NSString stringWithFormat:@"%02d",count-1];
+    count--;
+    if (min == 0&&hour==0) {
+        if (count == 0) {
+            [timer invalidate];
+        }
+    }
+    
+    if (hour == 0&&min!=0) {
+        if (count == 0) {
+            count = 60;
+            //            [self timeFireMethod];
+            minuteLabel.text  = [NSString stringWithFormat:@"%02d",min-1];
+            min--;
+            if (min==0) {
+                [timer invalidate];
+            }
+        }
+    }
+    if (hour !=0) {
+        if (count == 0) {
+            count = 60;
+            minuteLabel.text  = [NSString stringWithFormat:@"%02d",min-1];
+            min--;
+            minCount++;
+            if (min==0) {
+                min=60;
+                hourLabel.text = [NSString stringWithFormat:@"%02d",hour-1];
+                hour--;
+                if (hour==0) {
+                    [timer invalidate];
+                }
+            }
+            
+        }
+        
+    }
+    
+}
+
+
+
+#pragma mark -UITableViewDelegate
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 270*RATIOTYPE_HEIGHT;
+}
+#pragma mark UITableViewDataSource
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return _dataArray.count;
+}
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *cellName = @"cellID";
+    PatProduceCell *cell = [tableView dequeueReusableCellWithIdentifier:cellName];
+    if (cell == nil) {
+        cell = [[PatProduceCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellName];
+    }
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    PatProduceModel *model = [_dataArray objectAtIndex:indexPath.row];
+    cell.model = model;
+    
+    return cell;
+}
+
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    PatProduceDetailViewController *ppd = [[PatProduceDetailViewController alloc]init];
+    ppd.typeString = self.typeString;
+    ppd.hidesBottomBarWhenPushed = YES;
+    [self.navigationController pushViewController:ppd animated:YES];
+    for (PatProduceModel *model in _dataArray) {
+        ppd.strID = model.uid;
+    }
+}
+
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+
+@end

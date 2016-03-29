@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>7D8E478C-4254-4943-8AAB-31543B9E9793</string>
+	<key>IDESourceControlProjectName</key>
+	<string>Auction</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>81067518-4594-480d-b90f-1e9a9886ba72++368</key>
+		<string>svn://123.57.212.63/IOS2/Auction003</string>
+		<key>81067518-4594-480d-b90f-1e9a9886ba72++6270</key>
+		<string>svn://123.57.212.63/IOS2/Auction001</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>Auction.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>81067518-4594-480d-b90f-1e9a9886ba72++368</key>
+		<string>../..</string>
+		<key>81067518-4594-480d-b90f-1e9a9886ba72++6270</key>
+		<string>../../../Auction001</string>
+	</dict>
+	<key>IDESourceControlProjectRepositoryRootDictionary</key>
+	<dict>
+		<key>81067518-4594-480d-b90f-1e9a9886ba72++368</key>
+		<string>svn://123.57.212.63/IOS2</string>
+		<key>81067518-4594-480d-b90f-1e9a9886ba72++6270</key>
+		<string>svn://123.57.212.63/IOS2</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>svn://123.57.212.63/IOS2/Auction003/Auction.xcodeproj</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>81067518-4594-480d-b90f-1e9a9886ba72++368</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>81067518-4594-480d-b90f-1e9a9886ba72++6270</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Auction001</string>
+		</dict>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.subversion</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>81067518-4594-480d-b90f-1e9a9886ba72++368</string>
+			<key>IDESourceControlWCCName</key>
+			<string>Auction003</string>
+		</dict>
+	</array>
+</dict>
+</plist>

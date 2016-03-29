@@ -1,0 +1,72 @@
+//
+//  You Watch.pch
+//  YOU WATCH－Auction
+//
+//  Created by 葛宾霞151 on 15/6/25.
+//  Copyright (c) 2015年 葛宾霞151. All rights reserved.
+//
+
+#ifndef YOU_WATCH_Auction_You_Watch_pch
+#define YOU_WATCH_Auction_You_Watch_pch
+
+// Include any system framework and library headers here that should be included in all compilation units.
+// You will also need to set the Prefix Header build setting of one or more of your targets to reference this file.
+
+
+
+//宏定义屏幕的宽高
+#define  kScreenWidth [[UIScreen mainScreen] bounds].size.width
+#define  kScreenHeight [[UIScreen mainScreen] bounds].size.height
+
+
+//原型宽比例
+#define RATIOTYPE_WIDTH (kScreenWidth/750.0)
+//原型高比例
+#define RATIOTYPE_HEIGHT (kScreenHeight/1334.0)
+
+//限制字符，只能输入数字
+#define NUMBERS @"1234567890\n"
+
+#define SuppressPerformSelectorLeakWarning(Stuff) \
+do { \
+_Pragma("clang diagnostic push") \
+_Pragma("clang diagnostic ignored \"-Warc-performSelector-leaks\"") \
+Stuff; \
+_Pragma("clang diagnostic pop") \
+} while (0)
+
+#import "DataServe.h"
+#import "BaseModel.h"
+#import "UIImageView+WebCache.h"
+
+#import "YYHongShare.h"
+//银联支付信息
+#define kVCTitle          @"商户测试"
+#define kBtnFirstTitle    @"获取订单，开始测试"
+#define kWaiting          @"正在获取TN,请稍后..."
+#define kNote             @"提示"
+#define kConfirm          @"确定"
+#define kErrorNet         @"网络错误"
+#define kResult           @"支付结果：%@"
+#define kMode_Development             @"01"
+
+
+#endif
+
+//推送服务
+#define kAppId            @"autHYsuw0P6kUBziBoZfg4"
+#define kAppKey           @"Cqb4uEC2uv5iexbPtcHEg8"
+#define kAppSecret        @"XYqgU9kSjuAJec4cVG1vd9"
+
+
+
+#ifndef __IPHONE_3_0
+#warning "This project uses features only available in iOS SDK 3.0 and later."
+#endif
+
+#ifdef __OBJC__
+#import <UIKit/UIKit.h>
+#import <Foundation/Foundation.h>
+#import<AVFoundation/AVFoundation.h>
+#endif
+

@@ -1,0 +1,53 @@
+//
+//  AppDelegate.h
+//  Auction
+//
+//  Created by zhaoyue on 15/8/8.
+//  Copyright (c) 2015年 zhaoyue. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+#import "WXApi.h"
+#import "GeTuiSdk.h"
+
+@interface AppDelegate : UIResponder <UIApplicationDelegate,WXApiDelegate,GeTuiSdkDelegate>
+{
+//    GeTuiSdk  *_geTuiSdk;
+}
+
+@property (strong, nonatomic) UIWindow *window;
+@property(strong,nonatomic)NSString *timeStr;
+
+@property (strong, nonatomic) GeTuiSdk  *geTuiSdk;
+
+@property (retain, nonatomic) NSString *clientId;
+
+@property (assign, nonatomic) int lastPayloadIndex;
+@property (retain, nonatomic) NSString *payloadId;
+
+@property (assign, nonatomic) SdkStatus sdkStatus;
+
+@property(nonatomic ,strong)UIViewController *ViewController;
+
+
+-(void)setLoginAsRootController;
+-(void)setTabAsRootController;
+
+
+//个推
+- (void)startSdkWith:(NSString *)appID appKey:(NSString *)appKey appSecret:(NSString *)appSecret;
+- (void)stopSdk;
+
+- (void)setDeviceToken:(NSString *)aToken;
+- (BOOL)setTags:(NSArray *)aTag error:(NSError **)error;
+- (NSString *)sendMessage:(NSData *)body error:(NSError **)error;
+
+- (void)bindAlias:(NSString *)aAlias;
+- (void)unbindAlias:(NSString *)aAlias;
+
+- (void)testSdkFunction;
+- (void)testGetClientId;
+
+
+@end
+

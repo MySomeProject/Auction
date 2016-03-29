@@ -1,0 +1,159 @@
+//
+//  GoodsNumberViewController.m
+//  YOU WATCH－Auction
+//
+//  Created by zhaoyue on 15/7/1.
+//  Copyright (c) 2015年 葛宾霞151. All rights reserved.
+//
+
+#import "GoodsNumberViewController.h"
+#import "ZYControl.h"
+#import "AOColorFormat.h"
+#import "AFNetworking.h"
+#import "UIImageView+WebCache.h"
+@interface GoodsNumberViewController ()<UITableViewDelegate,UITableViewDataSource>
+{
+    UITableView *_newTableView;
+    NSMutableArray *_dataArray;
+    NSArray *imagesArray;
+    NSDictionary *attributeDict;
+    NSArray *attributeKeysArray;
+    NSArray *attributeValueArray;
+}
+@end
+
+@implementation GoodsNumberViewController
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+        _dataArray = [[NSMutableArray alloc]init];
+        imagesArray = [[NSArray alloc]init];
+        attributeDict = [[NSDictionary alloc]init];
+        attributeKeysArray = [[NSArray alloc]init];
+        attributeValueArray = [[NSArray alloc]init];
+    }
+    return self;
+}
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.title =@"商品参数";
+    self.view.backgroundColor = [UIColor whiteColor];
+    [self createTabItemLeftButton];
+    [self createTitleLabel];
+    [self createTableView];
+    [self createHeaderView];
+    [self createGoodsNumData];
+
+
+}
+-(void)createTabItemLeftButton
+{
+    UIButton *leftButton = [ZYControl createButtonWithFrame:CGRectMake(15, 24,9,17) ImageName:@"返回@2x.png" Target:self Action:@selector(leftButtonClick:) Title:nil];
+    self.navigationItem.leftBarButtonItem=[[UIBarButtonItem alloc]initWithCustomView:leftButton];
+}
+-(void)leftButtonClick:(UIButton *)leftButton
+{
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
+-(void)createTitleLabel
+{
+    UILabel *colorLabel = [ZYControl createLabelWithFrame:CGRectMake((9/375.0)*kScreenWidth, (20/667.0)*kScreenHeight, (80/375.0)*kScreenWidth, (20/667.0)*kScreenHeight) Font:12 Text:@"颜色"];
+    colorLabel.textColor = [AOColorFormat colorWithHexString:@"808080"];
+    _newTableView.tableHeaderView =colorLabel;
+}
+-(void)createTableView
+{
+    _newTableView = [[UITableView alloc]initWithFrame:CGRectMake(9, 0, kScreenWidth-18, kScreenHeight-44) style:UITableViewStylePlain];
+    _newTableView.delegate = self;
+    _newTableView.dataSource =self;
+    [self.view addSubview:_newTableView];
+    
+}
+-(void)createHeaderView
+{
+    UIView *headerView = [[UIView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth,80*attributeKeysArray.count*RATIOTYPE_HEIGHT)];
+//    headerView.backgroundColor = [UIColor redColor];
+    _newTableView.tableHeaderView = headerView;
+    //创建颜色
+    for (int i = 0; i <attributeKeysArray.count; i++) {
+        UILabel *colorLabel = [ZYControl createLabelWithFrame:CGRectMake((5/375.0)*kScreenWidth,(10/375.0)*kScreenHeight+((40/667.0)*kScreenHeight)*i,(100/375.0)*kScreenWidth, 20) Font:16 Text:attributeKeysArray[i]];
+        colorLabel.textColor = [AOColorFormat colorWithHexString:@"808080"];
+        [headerView addSubview:colorLabel];
+    }
+    //具体内容
+    for (int i = 0; i < attributeValueArray.count; i ++) {
+        UILabel *specificLabel = [ZYControl createLabelWithFrame:CGRectMake((5/375.0)*kScreenWidth+(200/375.0)*kScreenWidth, (10/375.0)*kScreenHeight+((40/667.0)*kScreenHeight)*i, (100/375.0)*kScreenWidth, 20) Font:16 Text:attributeValueArray[i]];
+        specificLabel.textAlignment = NSTextAlignmentRight;
+        specificLabel.textColor = [AOColorFormat colorWithHexString:@"4c4c4c"];
+        [headerView addSubview:specificLabel];
+        
+    }
+}
+
+-(void)createGoodsNumData
+{
+    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+    manager.responseSerializer = [AFJSONResponseSerializer serializer];
+    NSString *url = @"http://123.57.212.63/paimai/index.php?con=api&act=getAtttribute";
+    NSDictionary *parameters = @{@"auctionid":@"10"};
+    [manager POST:url parameters:parameters success:^(AFHTTPRequestOperation *operation, id responseObject) {
+        NSDictionary *dictData = responseObject[@"data"];
+        imagesArray = [dictData objectForKey:@"images"];
+        attributeDict = [dictData objectForKey:@"attribute"];
+        attributeKeysArray = [attributeDict allKeys];
+        attributeValueArray = [attributeDict allValues];
+        [self  createHeaderView];
+        [_newTableView reloadData];
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        NSLog(@"%@",error);
+    }];
+
+
+}
+#pragma mark -UITableViewDelegate
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 100*imagesArray.count;
+}
+#pragma mark UITableViewDataSource
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return imagesArray.count;
+}
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+   static NSString *cellName = @"cellID";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellName];
+    if (cell == nil) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:cellName];
+        for (int i = 0; i< imagesArray.count; i++) {
+        UIImageView *imageView = [[UIImageView alloc]initWithFrame:CGRectMake(50,(15/667.0)*kScreenHeight+(80/667.0)*kScreenHeight*i, 200,80)];
+            
+        [imageView sd_setImageWithURL:[NSURL URLWithString:imagesArray[i]]];
+        [cell addSubview:imageView];
+        }
+    }
+
+    cell.backgroundColor = [UIColor clearColor];
+    tableView.separatorStyle = UITableViewCellEditingStyleNone;
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    return cell;
+}
+- (void)didReceiveMemoryWarning {
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+/*
+#pragma mark - Navigation
+
+// In a storyboard-based application, you will often want to do a little preparation before navigation
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
+    // Get the new view controller using [segue destinationViewController].
+    // Pass the selected object to the new view controller.
+}
+*/
+
+@end

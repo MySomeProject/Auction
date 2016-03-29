@@ -1,0 +1,102 @@
+//
+//  AboutViewController.m
+//  YOU WATCH－Auction
+//
+//  Created by 葛宾霞151 on 15/7/6.
+//  Copyright (c) 2015年 葛宾霞151. All rights reserved.
+//
+
+#import "AboutViewController.h"
+#import "ZYControl.h"
+#import "AOColorFormat.h"
+
+@interface AboutViewController ()<UITableViewDataSource,UITableViewDelegate>
+
+
+@end
+
+@implementation AboutViewController
+
+
+
+- (void)viewDidLoad {
+   [super viewDidLoad];
+    self.title = @"关于拍大牌";
+    self.view.backgroundColor = [UIColor whiteColor];
+
+    _tabelView = [[UITableView alloc]initWithFrame:CGRectMake(0, 0, kScreenWidth, 100 * RATIOTYPE_HEIGHT * 2)];
+    [_tabelView setSeparatorInset:UIEdgeInsetsMake(0, 0, 0, 15)];
+    _tabelView.delegate = self;
+    _tabelView.dataSource = self;
+    
+    [self.view addSubview:_tabelView];
+    
+    [self createTabItemLeftButton];
+}
+
+
+-(void)createTabItemLeftButton
+{
+    UIButton *leftButton = [ZYControl createButtonWithFrame:CGRectMake(0, 24,9,17) ImageName:@"返回@2x.png" Target:self Action:@selector(leftButtonClick:) Title:nil];
+    self.navigationItem.leftBarButtonItem=[[UIBarButtonItem alloc]initWithCustomView:leftButton];
+    
+}
+
+-(void)leftButtonClick:(UIButton *)leftButton
+{
+    [self.navigationController popViewControllerAnimated:YES];
+    
+    self.tabBarController.tabBar.hidden = NO;
+    
+}
+
+
+#pragma mark - UITableViewDetegate
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 1;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 100 * RATIOTYPE_HEIGHT;
+}
+
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *aboutCell = @"aboutCell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:aboutCell];
+    if (!cell) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleValue1 reuseIdentifier:aboutCell];
+    }
+    
+//    if (indexPath.row == 0) {
+//        cell.textLabel.text = @"新版本检测";
+//        cell.textLabel.textAlignment = NSTextAlignmentLeft;
+//        cell.textLabel.textColor = [AOColorFormat colorWithHexString:@"#4c4c4c"];
+//        cell.textLabel.font = [UIFont systemFontOfSize:16];
+//        
+//        
+//
+//    }else
+//    {
+        cell.textLabel.text = @"版本信息";
+        cell.textLabel.textAlignment = NSTextAlignmentLeft;
+        cell.textLabel.textColor = [AOColorFormat colorWithHexString:@"#4c4c4c"];
+        cell.textLabel.font = [UIFont systemFontOfSize:16];
+        
+        cell.detailTextLabel.text = @"版本：1.0";
+        cell.detailTextLabel.textAlignment = NSTextAlignmentRight;
+        cell.detailTextLabel.textColor = [AOColorFormat colorWithHexString:@"#4c4c4c"];
+        cell.detailTextLabel.font = [UIFont systemFontOfSize:16];
+
+//    }
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
+    return cell;
+    
+}
+
+
+
+@end

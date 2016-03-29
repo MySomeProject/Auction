@@ -1,0 +1,156 @@
+//
+//  PayViewController.m
+//  YOU WATCH－Auction
+//
+//  Created by 葛宾霞151 on 15/7/30.
+//  Copyright (c) 2015年 葛宾霞151. All rights reserved.
+//
+
+#import "PayViewController.h"
+#import "ZYControl.h"
+#import "AOColorFormat.h"
+#import "SuccessViewController.h"
+#import "UserProtolViewController.h"
+#import "BankViewController.h"
+
+@interface PayViewController ()<UITableViewDataSource,UITableViewDelegate>
+{
+    //存放cell名称的数组
+    NSArray *nameArr;
+    //存放@0的数组
+    NSMutableArray *selectArr;
+    //存放图标的数组
+    NSArray *imageArr;
+    //确认按钮
+    UIButton *btn;
+    
+    int index;
+    int flag;
+}
+
+@end
+
+@implementation PayViewController
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    self.title = @"订单支付";
+    self.view.backgroundColor = [UIColor whiteColor];
+    
+    nameArr = @[@"支付宝",@"微信支付",@"银联支付",@"银行转账／汇款"];
+    imageArr = @[@"支付宝",@"微信",@"银联",@"银行汇款"];
+    selectArr = [NSMutableArray arrayWithArray:@[@0, @0, @0, @0]];
+
+
+    
+    [self.payButton addTarget:self action:@selector(PayAction:) forControlEvents:UIControlEventTouchUpInside];
+    [self.userProtocol addTarget:self action:@selector(userProAction:) forControlEvents:UIControlEventTouchUpInside];
+    
+    [self createTabItemLeftButton];
+}
+
+-(void)createTabItemLeftButton
+{
+    UIButton *leftButton = [ZYControl createButtonWithFrame:CGRectMake(0, 24,9,17) ImageName:@"返回@2x.png" Target:self Action:@selector(leftButtonClick:) Title:nil];
+    self.navigationItem.leftBarButtonItem=[[UIBarButtonItem alloc]initWithCustomView:leftButton];
+    
+}
+
+-(void)leftButtonClick:(UIButton *)leftButton
+{
+    [self.navigationController popViewControllerAnimated:YES];
+    
+    self.tabBarController.tabBar.hidden = YES;
+    
+}
+
+-(void)PayAction:(UIButton *)button
+{
+    if (index == 3) {
+        
+        BankViewController *bankVC = [[BankViewController alloc]init];
+        bankVC.hidesBottomBarWhenPushed = YES;
+        [self.navigationController pushViewController:bankVC animated:YES];
+        
+    }else
+    {
+    SuccessViewController *succVC = [[SuccessViewController alloc]init];
+    
+    [self.navigationController pushViewController:succVC animated:YES];
+    
+    succVC.hidesBottomBarWhenPushed = YES;
+
+    }
+}
+-(void)userProAction:(UIButton *)button
+{
+    UserProtolViewController *userVC = [[UserProtolViewController alloc]init];
+    
+    [self.navigationController pushViewController:userVC animated:YES];
+    
+    userVC.hidesBottomBarWhenPushed = YES;
+    
+}
+
+#pragma mark --- UITableViewDelegate
+-(UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    static NSString *str = @"PayViewController";
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:str];
+    
+    if (!cell) {
+        cell = [[UITableViewCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:str];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
+    
+    cell.textLabel.text = nameArr[indexPath.row];
+    cell.textLabel.font = [UIFont systemFontOfSize:15];
+    cell.textLabel.textColor = [AOColorFormat colorWithHexString:@"#4c4c4c"];
+    cell.imageView.image = [UIImage imageNamed:imageArr[indexPath.row]];
+    
+    for (UIView *vi in cell.contentView.subviews) {
+        [vi removeFromSuperview];
+    }
+    btn = [UIButton buttonWithType:UIButtonTypeCustom];
+    btn.frame = CGRectMake(kScreenWidth - 38, 13, 17, 17);
+    [btn setImage:[UIImage imageNamed:@"未选中状态"] forState:UIControlStateNormal];
+    [btn setImage:[UIImage imageNamed:@"选择状态按钮"] forState:UIControlStateSelected];
+    [btn addTarget:self action:@selector(Act:) forControlEvents:UIControlEventTouchUpInside];
+    btn.selected = [selectArr[indexPath.row] boolValue];
+    [cell.contentView addSubview:btn];
+    
+    return cell;
+}
+
+-(NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return nameArr.count;
+}
+
+-(CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 44;
+}
+-(void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    for (int i = 0; i < selectArr.count; i ++) {
+        [selectArr replaceObjectAtIndex:i withObject:@0];
+    }
+    [selectArr replaceObjectAtIndex:indexPath.row withObject:@1];
+    [_payTableView reloadData];
+    index = (int)indexPath.row;
+    NSLog(@"%d",index);
+
+}
+
+-(void)Act:(UIButton *)button
+{
+    
+    UITableViewCell *cell = (UITableViewCell *)[[button superview] superview];
+    NSIndexPath *ind = [_payTableView indexPathForCell:cell];
+    [self tableView:_payTableView didSelectRowAtIndexPath:ind];
+}
+
+
+@end

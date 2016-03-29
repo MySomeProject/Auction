@@ -1,0 +1,24 @@
+//
+//  PayViewController.h
+//  YOU WATCH－Auction
+//
+//  Created by 葛宾霞151 on 15/7/30.
+//  Copyright (c) 2015年 葛宾霞151. All rights reserved.
+//
+
+#import <UIKit/UIKit.h>
+
+@interface PayViewController : UIViewController
+
+@property (weak, nonatomic) IBOutlet UILabel *moneyLabel;
+
+@property (weak, nonatomic) IBOutlet UIButton *userProtocol;
+
+@property (weak, nonatomic) IBOutlet UIButton *payButton;
+
+@property (weak, nonatomic) IBOutlet UITableView *payTableView;
+
+@property(nonatomic , copy)NSString *orderID;//订单ID
+
+
+@end
